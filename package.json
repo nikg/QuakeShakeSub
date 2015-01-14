@@ -1,0 +1,16 @@
+{
+  "name": "QuakeShakeSub",
+  "version": "0.0.0",
+  "description": "re-implementation of the QuakeShake Sub (based on WSMulti from 2014) with tweaks",
+  "main": "app.js",
+  "dependencies": {
+    "ws": "*",
+    "socket.io":"^1.2.0",
+    "express": "^4.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nikg/QuakeShakeSub.git"
+  },
+  "homepage": "https://github.com/nikg/QuakeShakeSub"
+}
