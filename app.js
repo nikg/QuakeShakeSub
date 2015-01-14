@@ -8,7 +8,6 @@ var port = process.env.PORT || 9999;
 
 var util = require('util');
 var WebSocket = require('ws');
-var wsSrc;
 
 var allSocks = {};  // associative array to store connections ; tried [] array but 'splice' doesn't seem to work.
 connectionIDCounter = 0;
@@ -54,15 +53,16 @@ io.on('connection', function (socket) {
 
 function wsStart(){  // put the source websocket logic in a function for easy reconnect
 
-  wsSrc = new WebSocket(config.sourceSocket);
+  var wsSrc = new WebSocket(config.sourceSocket);
+
   wsSrc.on('open', function() {
     printSourceStatus('Connected to Source WS');
   });
 
   wsSrc.on('message', function(data, flags) {
   	//console.log("got message " + JSON.Stringify(data));
-  	console.log("sending message: data=" + data + " flags=" + flags);
-    socket.broadcast.emit(data);// broadcast as per: http://socket.io/docs/#broadcasting-messages
+  	//console.log("sending message: data=" + data + " flags=" + flags);
+    io.sockets.emit(data);// broadcast as per: http://socket.io/docs/#broadcasting-messages
   });
 
   wsSrc.on('close', function(ws) {
@@ -75,6 +75,7 @@ function wsStart(){  // put the source websocket logic in a function for easy re
   	console.log(error); 
   	setTimeout(wsStart(), 5000); 
   });
+
 }
 
 wsStart();
@@ -96,7 +97,7 @@ function printClientStatus(socket, status) {
 }
 
 function printSourceStatus(status) {
-	console.log(new Date() + ' ' + status + ' from: ' + config.sourceSocket);
+	console.log(new Date() + ' ' + status + ' ' + config.sourceSocket);
 }
 
 // prototype to return size of associative array
