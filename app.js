@@ -4,6 +4,8 @@ var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 8080;
+var buffMax = 1000;
+var buffer =[];
 
 
 var util = require('util');
@@ -23,6 +25,12 @@ app.get('/', function (req, res) {
 
 // Handle incoming Socket.IO
 io.on('connection', function (socket) {
+  //start new connections with a full buffer
+  for(var i=0; i < buffer.length; i++){
+    io.send(buffer[i]);
+   }
+  
+ 
 /*
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
@@ -57,6 +65,7 @@ function wsStart(){  // put the source websocket logic in a function for easy re
 
   wsSrc.on('open', function() {
     printSourceStatus('Connected to Source WS');
+
   });
 
   wsSrc.on('message', function(data, flags) {
@@ -66,7 +75,9 @@ function wsStart(){  // put the source websocket logic in a function for easy re
   
     /* broadcast as per: https://github.com/Automattic/socket.io/wiki/How-do-I-send-a-response-to-all-clients-except-sender%3F
     this doesn't seem to work: http://socket.io/docs/#broadcasting-messages */
-    io.sockets.send(data);  
+    io.sockets.send(data);
+    //add to buffer
+    updateBuffer(data);
   });
 
   wsSrc.on('close', function(ws) {
@@ -113,6 +124,28 @@ Object.size = function(obj) {
   return size;
 };
 
+//simple buffer treated as queue.
+//this queue shift is really O(n) but
+//since this is such a small array it shouldn't matter
+function updateBuffer(msg){
+  var packetFound=false;
+  //check for dupes. Only need to look at the tail end of buffer
+  for(var i=buffer.length -6; i< buffer.length; i++){
+    if(msg == buffer[i]){
+      packetFound=true;
+      break;
+    }
+  }
+  if(!packetFound){
+    buffer.push(msg);
+  }
+  while(buffer.length > buffMax ){
+    buffer.shift();
+  }
+  
+  // console.log(buffer);
+}
+
 function StrToTime(unix_timestamp) {
   var date = new Date(unix_timestamp);
   var hours = date.getHours();// hours part from the timestamp
@@ -121,5 +154,5 @@ function StrToTime(unix_timestamp) {
   var ms = "0" + date.getMilliseconds(); // milliseconds part from the timestamp
   // will display time in 10:30:23.354 format
   var formattedTime = hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2) + '.' + ms.substr(ms.length-3);
-  return formattedTime
+  return formattedTime;
 }
