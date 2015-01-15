@@ -66,7 +66,7 @@ function wsStart(){  // put the source websocket logic in a function for easy re
   
     /* broadcast as per: https://github.com/Automattic/socket.io/wiki/How-do-I-send-a-response-to-all-clients-except-sender%3F
     this doesn't seem to work: http://socket.io/docs/#broadcasting-messages */
-    io.sockets.emit(data);  
+    io.sockets.send(data);  
   });
 
   wsSrc.on('close', function(ws) {
@@ -92,12 +92,12 @@ process.on('uncaughtException', function(err) {
 });
 
 function printClientCount() {
-  console.log('Total Connected Clients:  ' + this.Object.size(allSocks));
-  console.log('Total Clients (lifetime): ' + connectionIDCounter);
+  console.log('Connected SocketIO Clients:  ' + this.Object.size(allSocks));
+  console.log('Total SocketIO Clients (lifetime): ' + connectionIDCounter);
 }
 
 function printClientStatus(socket, status) {
-	console.log(new Date() + ' Client ' + status + ' id: ' + socket.id + ' IP: '+ socket.IP);
+	console.log(new Date() + ' Socket.IO client ' + status + ' id: ' + socket.id + ' IP: '+ socket.IP);
 }
 
 function printSourceStatus(status) {

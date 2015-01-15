@@ -34,27 +34,31 @@
 	  //var wsurl = 'ws://quakeshakepub.azurewebsites.net:80';
 	  var host = window.document.location.host.replace(/:.*/, '');
 	  var wsurl = 'http://' + host + (location.port ? ':'+location.port : '');
-	  
 
-	  var socket = io.connect(wsurl);
-		socket.on('connect', function () {
+  	var socket = io.connect(wsurl);
+	socket.on('connect', function () {
 	    //socket.send('browser connected');
-	    socket.on('message', function (msg) {
-	      updateStats(JSON.parse(msg.data));
-	    });
+	    console.log("socket connected");
+
 	  });
 
-	  document.getElementById('test').innerHTML = "wsurl=" + wsurl + " port=" + (location.port ? ':'+location.port : '');
+		socket.on('message', function (msg) {
+		    message = JSON.parse(msg);
+		    updateStats(message);
+		   // console.log(msg);
+	    });
 
-		function StrToTime(unix_timestamp) {
-		  var date = new Date(unix_timestamp);
-		  var hours = date.getHours();// hours part from the timestamp
-		  var minutes = "0" + date.getMinutes(); // minutes part from the timestamp
-		  var seconds = "0" + date.getSeconds(); // seconds part from the timestamp
-		  // will display time in 10:30:23 format
-		  var formattedTime = hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2);
-		  return formattedTime
-		} 
+	  document.getElementById('test').innerHTML = "Socket.IO url=" + wsurl + " port=" + (location.port ? ':'+location.port : '');
+
+	function StrToTime(unix_timestamp) {
+	  var date = new Date(unix_timestamp);
+	  var hours = date.getHours();// hours part from the timestamp
+	  var minutes = "0" + date.getMinutes(); // minutes part from the timestamp
+	  var seconds = "0" + date.getSeconds(); // seconds part from the timestamp
+	  // will display time in 10:30:23 format
+	  var formattedTime = hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2);
+	  return formattedTime
+	} 
     </script>
   </body>
 </html>
