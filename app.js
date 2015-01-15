@@ -60,9 +60,13 @@ function wsStart(){  // put the source websocket logic in a function for easy re
   });
 
   wsSrc.on('message', function(data, flags) {
-  	//console.log("got message " + JSON.Stringify(data));
-  	//console.log("sending message: data=" + data + " flags=" + flags);
-    io.sockets.emit(data);// broadcast as per: http://socket.io/docs/#broadcasting-messages
+  	//console.log("sending message: data=" + data);
+    message = JSON.parse(data);
+  	console.log("from=" + message.sta + ":" + message.chan + ":" + message.net + ":" + message.loc + " length=" + message.data.length + " start=" + StrToTime(message.starttime) + " end=" + StrToTime(message.endtime));
+  
+    /* broadcast as per: https://github.com/Automattic/socket.io/wiki/How-do-I-send-a-response-to-all-clients-except-sender%3F
+    this doesn't seem to work: http://socket.io/docs/#broadcasting-messages */
+    io.sockets.emit(data);  
   });
 
   wsSrc.on('close', function(ws) {
@@ -108,3 +112,14 @@ Object.size = function(obj) {
   }
   return size;
 };
+
+function StrToTime(unix_timestamp) {
+  var date = new Date(unix_timestamp);
+  var hours = date.getHours();// hours part from the timestamp
+  var minutes = "0" + date.getMinutes(); // minutes part from the timestamp
+  var seconds = "0" + date.getSeconds(); // seconds part from the timestamp
+  var ms = "0" + date.getMilliseconds(); // milliseconds part from the timestamp
+  // will display time in 10:30:23.354 format
+  var formattedTime = hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2) + '.' + ms.substr(ms.length-3);
+  return formattedTime
+}
