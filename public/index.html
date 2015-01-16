@@ -18,7 +18,7 @@
       </head>
   <body >
   	<h3>QuakeShake Sub powered by Azure</h3>
-    <strong>Data:</strong><br>
+    <strong>Data<div id='host'></div></strong><br>
     sta: <div id='sta'></div><br>
     from: <div id='from'></div><br>
     to: <div id='to'></div><br>
@@ -29,6 +29,7 @@
 	    document.getElementById('sta').innerHTML = data.sta;
 	    document.getElementById('from').innerHTML = StrToTime(data.starttime);
 	    document.getElementById('to').innerHTML = StrToTime(data.endtime);
+	    document.getElementById('host').innerHTML = data.hname;
 	  }
 	  
 	  //var wsurl = 'ws://quakeshakepub.azurewebsites.net:80';

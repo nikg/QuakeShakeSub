@@ -1,5 +1,6 @@
 // Setup express 4 server
 var config = require('./config');
+var os = require('os');
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -72,9 +73,11 @@ function wsStart(){  // put the source websocket logic in a function for easy re
   	//console.log("sending message: data=" + data);
     message = JSON.parse(data);
   	console.log("from=" + message.sta + ":" + message.chan + ":" + message.net + ":" + message.loc + " length=" + message.data.length + " start=" + StrToTime(message.starttime) + " end=" + StrToTime(message.endtime));
-  
+    message.hname = " [ " + os.hostname() + " ]";
     /* broadcast as per: https://github.com/Automattic/socket.io/wiki/How-do-I-send-a-response-to-all-clients-except-sender%3F
     this doesn't seem to work: http://socket.io/docs/#broadcasting-messages */
+    
+    data = JSON.stringify(message);
     io.sockets.send(data);
     //add to buffer
     updateBuffer(data);
