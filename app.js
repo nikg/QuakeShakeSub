@@ -49,8 +49,9 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     // Remove disconnected client from the array.
-    delete allSocks[socket.id];
     printClientStatus(socket, 'Disconnected');
+    delete allSocks[socket.id];
+    delete socket.namespace.sockets[socket.id];  // possible fix for deleted sockets "hanging" in memory: https://github.com/Automattic/socket.io/issues/407
 	printClientCount();
   });
 
