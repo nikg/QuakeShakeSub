@@ -28,7 +28,7 @@ app.get('/', function (req, res) {
 io.on('connection', function (socket) {
   //start new connections with a full buffer
   for(var i=0; i < buffer.length; i++){
-    io.send(buffer[i]);
+    socket.send(buffer[i]);
    }
   
  
